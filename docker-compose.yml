@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database (default/recommended)
+  postgres:
+    image: postgres:16-alpine
+    container_name: domeforms-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: domeforms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MySQL database
+  mysql:
+    image: mysql:8.0
+    container_name: domeforms-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: domeforms
+      MYSQL_USER: domeforms
+      MYSQL_PASSWORD: domeforms
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "domeforms", "-pdomeforms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MariaDB database (MySQL-compatible fork)
+  mariadb:
+    image: mariadb:11
+    container_name: domeforms-mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: domeforms
+      MARIADB_USER: domeforms
+      MARIADB_PASSWORD: domeforms
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # SQL Server database (Enterprise option)
+  sqlserver:
+    image: mcr.microsoft.com/mssql-server:2022-latest
+    container_name: domeforms-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "DomeForms@2024!"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'DomeForms@2024!' -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: domeforms-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: domeforms-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    # No persistence needed for dev
+
+volumes:
+  postgres_data:
+  mysql_data:
+  mariadb_data:
+  sqlserver_data:
+  redis_data:

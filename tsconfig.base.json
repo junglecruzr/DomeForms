@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@domeforms/core": ["packages/core/src"],
+      "@domeforms/builder": ["packages/builder/src"],
+      "@domeforms/renderer": ["packages/renderer/src"],
+      "@domeforms/server": ["packages/server/src"],
+      "@domeforms/plugins": ["packages/plugins/src"],
+      "@domeforms/ui": ["packages/ui/src"],
+      "@domeforms/database": ["packages/database/src"]
+    },
+    "ignoreDeprecations": "5.0"
+  },
+  "exclude": ["node_modules", "dist", "build", ".turbo"]
+}

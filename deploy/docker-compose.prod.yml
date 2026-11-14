@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  domeforms-api:
+    build: ./packages/server
+    container_name: domeforms-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=file:/data/domeforms.db
+      - DATABASE_TYPE=sqlite
+      - BETTER_AUTH_SECRET=domeforms-production-secret-key-32chars-now
+      - BETTER_AUTH_URL=https://domeforms.frugalin.cloud
+      - FRONTEND_URL=https://domeforms.frugalin.cloud
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_FROM=noreply@domeforms.frugalin.cloud
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

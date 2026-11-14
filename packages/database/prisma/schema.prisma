@@ -1,0 +1,467 @@
+// DomeForms Database Schema
+// Supports PostgreSQL, MySQL, MariaDB, SQLite, and SQL Server
+// 
+// Switch database by changing provider and updating DATABASE_URL:
+// PostgreSQL: provider = "postgresql" | DATABASE_URL="postgresql://..."
+// MySQL:      provider = "mysql"     | DATABASE_URL="mysql://..."
+// MariaDB:    provider = "mysql"     | DATABASE_URL="mariadb://..." (or mysql://)
+// SQLite:     provider = "sqlite"    | DATABASE_URL="file:./data.db"
+// SQL Server: provider = "sqlserver" | DATABASE_URL="sqlserver://..."
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  avatarUrl     String?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+  memberships   Membership[]
+  ownedOrgs     Organization[] @relation("OrganizationOwner")
+  sessions      Session[]
+  apiKeys       ApiKey[]
+  submissions   Submission[] @relation("SubmissionUser")
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([token])
+  @@index([userId])
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  keyHash     String   @unique
+  prefix      String
+  permissions Json     @default("[]")
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([keyHash])
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  settings    Json     @default("{}")
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  owner       User     @relation("OrganizationOwner", fields: [ownerId], references: [id])
+  memberships Membership[]
+  workspaces  Workspace[]
+  billing     Billing?
+  @@index([slug])
+  @@index([ownerId])
+}
+
+model Membership {
+  id             String   @id @default(uuid())
+  userId         String
+  organizationId String
+  role           Role     @default(MEMBER)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@unique([userId, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Workspace {
+  id              String   @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?
+  settings        Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  forms           Form[]
+  themes          Theme[]
+  @@index([organizationId])
+}
+
+model Form {
+  id            String   @id @default(uuid())
+  workspaceId   String
+  name          String
+  description   String?
+  definition    Json
+  version       Int      @default(1)
+  status        FormStatus @default(DRAFT)
+  themeId       String?
+  settings      Json     @default("{}")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  publishedAt   DateTime?
+  deletedAt     DateTime?
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  theme         Theme?       @relation(fields: [themeId], references: [id])
+  versions      FormVersion[]
+  submissions   Submission[]
+  integrations  Integration[]
+  webhooks      Webhook[]
+  analytics     FormAnalytics[]
+  @@index([workspaceId])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+enum FormStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model FormVersion {
+  id          String   @id @default(uuid())
+  formId      String
+  version     Int
+  definition  Json
+  changelog   String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  form        Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  @@unique([formId, version])
+  @@index([formId])
+}
+
+model Theme {
+  id          String   @id @default(uuid())
+  workspaceId String
+  name        String
+  isDefault   Boolean  @default(false)
+  variables   Json
+  customCss   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  forms       Form[]
+  @@index([workspaceId])
+  @@index([isDefault])
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  formId        String
+  formVersion   Int
+  data          Json
+  metadata      Json
+  status        SubmissionStatus @default(PENDING)
+  paymentStatus PaymentStatus?
+  paymentId     String?
+  paymentAmount Int?
+  paymentCurrency String? @default("USD")
+  userId        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  user          User?    @relation("SubmissionUser", fields: [userId], references: [id], onDelete: SetNull)
+  fieldValues   FieldValue[]
+  events        SubmissionEvent[]
+  files         SubmissionFile[]
+  @@index([formId])
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([paymentStatus])
+}
+
+enum SubmissionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  SPAM
+  ARCHIVED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIAL
+}
+
+model FieldValue {
+  id           String   @id @default(uuid())
+  submissionId String
+  fieldId      String
+  fieldName    String
+  fieldType    String
+  value        Json
+  createdAt    DateTime @default(now())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  @@index([submissionId])
+  @@index([fieldId])
+}
+
+model SubmissionEvent {
+  id           String   @id @default(uuid())
+  submissionId String
+  type         String
+  data         Json?
+  createdAt    DateTime @default(now())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  @@index([submissionId])
+  @@index([type])
+}
+
+model SubmissionFile {
+  id           String   @id @default(uuid())
+  submissionId String
+  fieldId      String
+  fieldName    String
+  fileName     String
+  fileSize     Int
+  mimeType     String
+  storageKey   String
+  url          String
+  createdAt    DateTime @default(now())
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  @@index([submissionId])
+}
+
+model Integration {
+  id        String   @id @default(uuid())
+  formId    String
+  type      IntegrationType
+  name      String
+  config    Json
+  mapping   Json
+  enabled   Boolean  @default(true)
+  runOn     String   @default("submit")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  logs      IntegrationLog[]
+  @@index([formId])
+  @@index([type])
+}
+
+enum IntegrationType {
+  EMAIL
+  WEBHOOK
+  ZAPIER
+  MAILCHIMP
+  HUBSPOT
+  SALESFORCE
+  ACTIVECAMPAIGN
+  CONVERTKIT
+  STRIPE
+  PAYPAL
+  TWILIO
+  CUSTOM
+}
+
+model IntegrationLog {
+  id            String   @id @default(uuid())
+  integrationId String
+  submissionId  String?
+  status        LogStatus
+  request       Json?
+  response      Json?
+  error         String?
+  duration      Int
+  createdAt     DateTime @default(now())
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  @@index([integrationId])
+  @@index([submissionId])
+  @@index([status])
+}
+
+enum LogStatus {
+  SUCCESS
+  FAILED
+  PENDING
+  RETRYING
+}
+
+model Webhook {
+  id          String   @id @default(uuid())
+  formId      String
+  name        String
+  url         String
+  secret      String?
+  events      String[]
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  form        Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  deliveries  WebhookDelivery[]
+  @@index([formId])
+}
+
+model WebhookDelivery {
+  id        String   @id @default(uuid())
+  webhookId String
+  event     String
+  payload   Json
+  status    DeliveryStatus
+  response  Json?
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+  deliveredAt DateTime?
+  webhook   Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  @@index([webhookId])
+  @@index([status])
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  RETRYING
+}
+
+model FormAnalytics {
+  id              String   @id @default(uuid())
+  formId          String
+  date            DateTime @db.Date
+  period          AnalyticsPeriod
+  views           Int      @default(0)
+  starts          Int      @default(0)
+  submissions     Int      @default(0)
+  completionRate  Float    @default(0)
+  avgDuration     Int      @default(0)
+  deviceDesktop   Int      @default(0)
+  deviceMobile    Int      @default(0)
+  deviceTablet    Int      @default(0)
+  browserChrome   Int      @default(0)
+  browserFirefox  Int      @default(0)
+  browserSafari   Int      @default(0)
+  browserEdge     Int      @default(0)
+  browserOther    Int      @default(0)
+  sourceDirect    Int      @default(0)
+  sourceOrganic   Int      @default(0)
+  sourceReferral  Int      @default(0)
+  sourceSocial    Int      @default(0)
+  sourceEmail     Int      @default(0)
+  sourcePaid      Int      @default(0)
+  sourceOther     Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  form            Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  @@unique([formId, date, period])
+  @@index([formId])
+  @@index([date])
+}
+
+enum AnalyticsPeriod {
+  HOUR
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
+model FieldAnalytics {
+  id             String   @id @default(uuid())
+  formId         String
+  fieldId        String
+  fieldName      String
+  fieldType      String
+  date           DateTime @db.Date
+  period         AnalyticsPeriod
+  totalResponses Int      @default(0)
+  uniqueResponses Int     @default(0)
+  skipRate       Float    @default(0)
+  errorRate      Float    @default(0)
+  distribution   Json?
+  numericMin     Float?
+  numericMax     Float?
+  numericMean    Float?
+  numericMedian  Float?
+  numericSum     Float?
+  numericStdDev  Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@unique([formId, fieldId, date, period])
+  @@index([formId])
+  @@index([fieldId])
+  @@index([date])
+}
+
+model Billing {
+  id                 String   @id @default(uuid())
+  organizationId     String   @unique
+  stripeCustomerId   String?  @unique
+  stripeSubscriptionId String? @unique
+  plan               Plan     @default(FREE)
+  status             BillingStatus @default(ACTIVE)
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
+  trialEndsAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+}
+
+enum Plan {
+  FREE
+  PRO
+  TEAM
+  ENTERPRISE
+}
+
+enum BillingStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+  INCOMPLETE
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  organizationId String
+  userId       String?
+  action       String
+  resource     String
+  resourceId   String?
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  @@index([organizationId])
+  @@index([userId])
+  @@index([action])
+  @@index([resource, resourceId])
+  @@index([createdAt])
+}

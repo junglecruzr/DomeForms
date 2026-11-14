@@ -1,0 +1,67 @@
+/**
+ * Theme schema
+ */
+
+import { z } from 'zod';
+import { uuidSchema, isoDateSchema, cssColorSchema, cssSizeSchema } from './base.js';
+
+export const themeVariablesSchema = z.object({
+  'color-primary': cssColorSchema,
+  'color-primary-hover': cssColorSchema,
+  'color-primary-text': cssColorSchema,
+  'color-secondary': cssColorSchema,
+  'color-secondary-hover': cssColorSchema,
+  'color-secondary-text': cssColorSchema,
+  'color-success': cssColorSchema,
+  'color-warning': cssColorSchema,
+  'color-error': cssColorSchema,
+  'color-background': cssColorSchema,
+  'color-surface': cssColorSchema,
+  'color-surface-hover': cssColorSchema,
+  'color-border': cssColorSchema,
+  'color-text': cssColorSchema,
+  'color-text-muted': cssColorSchema,
+  'color-text-inverse': cssColorSchema,
+  'font-family': z.string(),
+  'font-family-mono': z.string(),
+  'font-size-base': cssSizeSchema,
+  'font-size-sm': cssSizeSchema,
+  'font-size-lg': cssSizeSchema,
+  'font-size-xl': cssSizeSchema,
+  'line-height-base': z.string(),
+  'font-weight-normal': z.string(),
+  'font-weight-medium': z.string(),
+  'font-weight-bold': z.string(),
+  'spacing-xs': cssSizeSchema,
+  'spacing-sm': cssSizeSchema,
+  'spacing-md': cssSizeSchema,
+  'spacing-lg': cssSizeSchema,
+  'spacing-xl': cssSizeSchema,
+  'border-radius-sm': cssSizeSchema,
+  'border-radius-md': cssSizeSchema,
+  'border-radius-lg': cssSizeSchema,
+  'border-radius-full': cssSizeSchema,
+  'border-width': cssSizeSchema,
+  'shadow-sm': z.string(),
+  'shadow-md': z.string(),
+  'shadow-lg': z.string(),
+  'transition-fast': z.string(),
+  'transition-normal': z.string(),
+  'transition-slow': z.string(),
+  'input-height': cssSizeSchema,
+  'input-padding-x': cssSizeSchema,
+  'input-padding-y': cssSizeSchema,
+  'label-gap': cssSizeSchema,
+  'field-gap': cssSizeSchema,
+  'section-gap': cssSizeSchema,
+});
+
+export const themeSchema = z.object({
+  id: uuidSchema,
+  name: z.string(),
+  isDefault: z.boolean().default(false),
+  variables: themeVariablesSchema,
+  customCss: z.string().optional(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema,
+});
