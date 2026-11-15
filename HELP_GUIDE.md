@@ -351,3 +351,58 @@ psql -U postgres -d domeforms -c "SELECT 1"
 ---
 
 *This documentation covers DomeForms v1.1. For the latest updates, visit the GitHub repository.*
+
+---
+
+## Implementation Recipes
+
+Here are common ways to use DomeForms on your website.
+
+### 1. Email Access Gate (Newsletter/Lead Magnet)
+*Goal: Capture an email address and redirect the user to a "Thank You" or "Download" page.*
+
+1. **Create the Form:**
+   - Add an **Email** field.
+   - Set it to "Required".
+2. **Configure Integration:**
+   - Go to Integrations → Email.
+   - Set the notification to send you the lead.
+3. **Embed on Site:**
+   - Use the **Embed Code** (Iframe) on your landing page.
+4. **Post-Submission Action:**
+   - In the form settings, add a "Redirect" URL to the page you want them to reach after they provide their email (e.g., `yourdomain.com/downloads`).
+
+### 2. Simple Checkout Form (Stripe Integration)
+*Goal: Charge a user a fixed price for access to a service.*
+
+1. **Create the Form:**
+   - Add necessary contact fields (Name, Email).
+   - Add a **Payment Field** (Stripe).
+2. **Configure Stripe:**
+   - Connect your Stripe account in Integration Settings.
+   - Enter your Product Price.
+3. **Embed on Site:**
+   - Embed this form on your "Pricing" or "Checkout" page.
+4. **Success Handling:**
+   - Once Stripe processes the payment, the user will be redirected based on your success settings. The submission status in the dashboard will update from `PENDING` to `PAID`.
+
+---
+
+## Developer Implementation (Embed API)
+
+For full control, use our JavaScript SDK:
+
+```html
+<div id="my-form"></div>
+<script src="https://yourdomain.com/js/sdk.js"></script>
+<script>
+  DomeForms.render({
+    formId: 'YOUR_FORM_ID',
+    container: '#my-form',
+    onSuccess: (submission) => {
+      console.log("Submission successful:", submission);
+      window.location.href = '/success';
+    }
+  });
+</script>
+```
