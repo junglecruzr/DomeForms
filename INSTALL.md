@@ -217,6 +217,10 @@ FRONTEND_URL="https://yourdomain.com"
 # Stripe (optional - for payment forms)
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+# PayPal (optional)
+PAYPAL_CLIENT_ID=""
+PAYPAL_SECRET_KEY=""
+PAYPAL_MODE="sandbox"
 ```
 
 ### Step 3: Generate Database Schema

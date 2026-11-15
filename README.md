@@ -11,6 +11,7 @@ A standalone, open-source drag-and-drop form builder with a modern tech stack. B
 - **Math Expressions** - Real-time calculations with safe expression evaluation
 - **Theme System** - CSS variable-based theming with live preview
 - **Integrations** - Email, webhooks, CRM (Mailchimp, HubSpot, etc.), payments (Stripe, PayPal)
+- **Payment Gateways** - Stripe and PayPal for collecting payments through forms
 - **Embed Anywhere** - Iframe or JS SDK for any website
 - **Analytics** - Views, submissions, field analytics, funnel visualization
 - **File Uploads** - S3/MinIO storage with presigned URLs
@@ -48,6 +49,7 @@ domeforms/
 │   ├── renderer/          # Form rendering engine
 │   ├── server/            # Fastify API server
 │   ├── plugins/           # Integration plugins
+- **Payment Gateways** - Stripe and PayPal for collecting payments through forms
 │   ├── ui/                # Shared UI components
 │   ├── config/            # Shared ESLint, Prettier, Tailwind configs
 │   └── database/          # Prisma schema + client
@@ -164,9 +166,10 @@ Form rendering engine for embedding forms anywhere.
 | Submissions | `GET /api/submissions`, `POST /api/submissions/public` |
 | Themes | `GET/POST /api/themes`, `GET/PATCH/DELETE /api/themes/:id` |
 | Integrations | `GET/POST /api/integrations`, `GET/PATCH/DELETE /api/integrations/:id` |
+- **Payment Gateways** - Stripe and PayPal for collecting payments through forms
 | Webhooks | `GET/POST /api/webhooks`, `POST /api/webhooks/receive/:formId` |
 | Analytics | `GET /api/analytics/forms/:formId` |
-| Auth | `POST /api/auth/register`, `POST /api/auth/login` |
+| Auth | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` | Secure authentication with JWT |
 | Upload | `POST /api/upload/presign`, `POST /api/upload/confirm` |
 
 ## License
