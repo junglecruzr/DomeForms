@@ -48,6 +48,11 @@ const envSchema = z.object({
   MAILGUN_API_KEY: z.string().optional(),
   TWILIO_ACCOUNT_SID: z.string().optional(),
   TWILIO_AUTH_TOKEN: z.string().optional(),
+  
+  // PayPal Payment Gateway (optional)
+  PAYPAL_CLIENT_ID: z.string().optional(),
+  PAYPAL_SECRET_KEY: z.string().optional(),
+  PAYPAL_MODE: z.enum(['sandbox', 'live']).default('sandbox'),
 });
 
 export const env = envSchema.parse(process.env);

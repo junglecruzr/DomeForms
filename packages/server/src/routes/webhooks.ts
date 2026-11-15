@@ -8,6 +8,7 @@ import { prisma } from '@domeforms/database';
 import crypto from 'crypto';
 import { Prisma } from '@domeforms/database';
 import { handleStripeWebhook } from '../services/payment.js';
+import { handlePayPalWebhook } from '../services/paypal.js';
 
 const createWebhookSchema = z.object({
   formId: z.string().uuid(),
@@ -63,7 +64,6 @@ export async function webhooksRoutes(fastify: FastifyInstance) {
   // Stripe webhook endpoint (raw body required)
   fastify.post('/stripe', {
     preHandler: async (request, reply) => {
-      // Disable body limit for raw stream processing
       reply.raw.setMaxListeners(0);
     },
   }, async (request, reply) => {
@@ -73,7 +73,6 @@ export async function webhooksRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'Missing Stripe signature' });
     }
 
-    // Collect raw body chunks
     let body = '';
     for await (const chunk of request.raw) {
       body += chunk;
@@ -85,6 +84,18 @@ export async function webhooksRoutes(fastify: FastifyInstance) {
     } catch (error: any) {
       fastify.log.error(error);
       return reply.status(400).send({ error: error.message });
+    }
+  });
+
+  // PayPal IPN/Webhook endpoint
+  fastify.post('/paypal/ipn', async (request, reply) => {
+    const payload = request.body as any;
+    try {
+      await handlePayPalWebhook(payload);
+      return { received: true };
+    } catch (error: any) {
+      fastify.log.error(error);
+      return reply.status(500).send({ error: error.message });
     }
   });
   

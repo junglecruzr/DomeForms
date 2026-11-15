@@ -372,14 +372,14 @@ Here are common ways to use DomeForms on your website.
 4. **Post-Submission Action:**
    - In the form settings, add a "Redirect" URL to the page you want them to reach after they provide their email (e.g., `yourdomain.com/downloads`).
 
-### 2. Simple Checkout Form (Stripe Integration)
+### 2. Simple Checkout Form (PayPal or Stripe Integration)
 *Goal: Charge a user a fixed price for access to a service.*
 
 1. **Create the Form:**
    - Add necessary contact fields (Name, Email).
-   - Add a **Payment Field** (Stripe).
-2. **Configure Stripe:**
-   - Connect your Stripe account in Integration Settings.
+   - Add a **Payment Field** (PayPal or Stripe).
+2. **Configure PayPal or Stripe:**
+   - Connect your PayPal or Stripe account in Integration Settings.
    - Enter your Product Price.
 3. **Embed on Site:**
    - Embed this form on your "Pricing" or "Checkout" page.
