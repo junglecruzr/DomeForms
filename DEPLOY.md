@@ -5,7 +5,7 @@
 Run this command from your LOCAL terminal (not the VPS):
 
 ```bash
-scp domeforms-server.tar.gz root@72.62.161.34:/tmp/
+scp domeforms-server.tar.gz root@your-vps-ip:/tmp/
 ```
 
 Or copy manually via Hostinger File Manager.
@@ -24,11 +24,11 @@ PORT=3000
 DATABASE_URL="file:./data/domeforms.db"
 DATABASE_TYPE=sqlite
 BETTER_AUTH_SECRET="domeforms-production-secret-key-32chars-now"
-BETTER_AUTH_URL="https://domeforms.frugalin.cloud"
-FRONTEND_URL="https://domeforms.frugalin.cloud"
+BETTER_AUTH_URL="https://domeforms.yourdomain.com"
+FRONTEND_URL="https://domeforms.yourdomain.com"
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
-SMTP_FROM="noreply@domeforms.frugalin.cloud"
+SMTP_FROM="noreply@domeforms.yourdomain.com"
 ENVEOF
 
 # Install dependencies

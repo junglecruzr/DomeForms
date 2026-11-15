@@ -1,13 +1,13 @@
 #!/bin/bash
 # DomeForms VPS Deployment Script
-# Targets VPS at 72.62.161.34 - Deploys isolated container on port 3003
+# Targets VPS at your-vps-ip - Deploys isolated container on port 3003
 
 set -e
 
-VPS_IP="72.62.161.34"
+VPS_IP="your-vps-ip"
 VPS_USER="root"
 REMOTE_DIR="/var/www/domeforms"
-LOCAL_DIR="/home/paul/Documents/formCurator/deploy/domeforms"
+LOCAL_DIR="/path/to/domeforms/deploy/domeforms"
 
 echo "========================================="
 echo "   DomeForms VPS Deployer (Port 3003)    "
@@ -59,12 +59,12 @@ docker run -d \
 echo "  ✓ Container domeforms-service running on port 3003"
 REMOTECMDS
 
-echo "[4/4] Configuring Nginx reverse proxy for domeforms.frugalin.cloud..."
+echo "[4/4] Configuring Nginx reverse proxy for domeforms.yourdomain.com..."
 ssh "$VPS_USER@$VPS_IP" << 'NGINXCMDS'
-cat > /etc/nginx/sites-available/domeforms.frugalin.cloud << 'NGINXCONF'
+cat > /etc/nginx/sites-available/domeforms.yourdomain.com << 'NGINXCONF'
 server {
     listen 80;
-    server_name domeforms.frugalin.cloud;
+    server_name domeforms.yourdomain.com;
 
     location / {
         proxy_pass http://127.0.0.1:3003;
@@ -76,7 +76,7 @@ server {
 }
 NGINXCONF
 
-ln -sf /etc/nginx/sites-available/domeforms.frugalin.cloud /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/domeforms.yourdomain.com /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 echo "  ✓ Nginx configured and reloaded for port 3003"
 NGINXCMDS
@@ -86,5 +86,5 @@ echo "========================================="
 echo "   Deployment Complete!"
 echo "========================================="
 echo "Health Check: http://$VPS_IP:3003/api/health"
-echo "Domain:       http://domeforms.frugalin.cloud/api/health"
+echo "Domain:       http://domeforms.yourdomain.com/api/health"
 echo "========================================="

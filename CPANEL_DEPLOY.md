@@ -37,7 +37,7 @@ On your local machine (not the server), prepare the build:
 
 ```bash
 # Clone or navigate to your project
-cd /home/paul/Documents/formCurator
+cd /path/to/domeforms
 
 # Install dependencies
 corepack pnpm install

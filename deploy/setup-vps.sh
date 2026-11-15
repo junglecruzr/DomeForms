@@ -3,9 +3,9 @@
 # Usage: bash setup-vps.sh
 
 set -e
-DOMAIN="domeforms.frugalin.cloud"
+DOMAIN="domeforms.yourdomain.com"
 APP_DIR="/var/www/domeforms"
-SOURCE_DIR="/home/paul/Documents/formCurator/deploy/domeforms"
+SOURCE_DIR="/path/to/domeforms/deploy/domeforms"
 
 echo "========================================="
 echo "   DomeForms VPS Auto-Deploy"
@@ -39,7 +39,7 @@ echo "  ✓ Packages installed"
 echo "[5/7] Configuring Apache virtual host..."
 cat > /etc/apache2/sites-available/domeforms.conf << 'APACHECONF'
 <VirtualHost *:80>
-    ServerName domeforms.frugalin.cloud
+    ServerName domeforms.yourdomain.com
     DocumentRoot /var/www/domeforms
 
     PassengerEnabled on

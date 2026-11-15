@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=['https://promptframer.com', 'https://www.promptframer.com', 'https://domeforms.frugalin.cloud'])
+CORS(app, origins=['https://yourdomain.com', 'https://www.yourdomain.com', 'https://domeforms.yourdomain.com'])
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'domeforms.db')
 
@@ -100,7 +100,7 @@ def embed_script():
                 `;
                 
                 const iframe = document.createElement('iframe');
-                iframe.src = `https://domeforms.frugalin.cloud/forms/${formId}/render?theme=${options.theme || 'default'}`;
+                iframe.src = `https://domeforms.yourdomain.com/forms/${formId}/render?theme=${options.theme || 'default'}`;
                 iframe.style.cssText = `
                     width: 90%; max-width: 600px; height: 80vh; border: none;
                     border-radius: 8px; background: white;

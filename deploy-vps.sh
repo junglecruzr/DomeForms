@@ -12,4 +12,4 @@ pnpm --filter @domeforms/server build
 echo "Creating deployment package..."
 tar -czf /tmp/domeforms-deploy.tar.gz packages/server/dist/
 
-echo "Done! Upload with: scp /tmp/domeforms-deploy.tar.gz root@72.62.161.34:/tmp/"
+echo "Done! Upload with: scp /tmp/domeforms-deploy.tar.gz root@your-vps-ip:/tmp/"

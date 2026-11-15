@@ -29,7 +29,7 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/junglecruzr/DomeForms.git
+   git clone https://github.com/your-github-user/DomeForms.git
    cd DomeForms
    ```
 
@@ -330,7 +330,7 @@ psql -U postgres -d domeforms -c "SELECT 1"
 
 ### Need More Help?
 
-- Check the [GitHub Issues](https://github.com/junglecruzr/DomeForms/issues)
+- Check the [GitHub Issues](https://github.com/your-github-user/DomeForms/issues)
 - Review the [Technical White Paper](WHITE_PAPER.md)
 - Contact the development team
 

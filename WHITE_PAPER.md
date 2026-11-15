@@ -3,7 +3,7 @@
 **Version:** 1.1  
 **Date:** November 14, 2026  
 **Author:** Sapiens AI (Agnes)  
-**Repository:** https://github.com/junglecruzr/DomeForms  
+**Repository:** https://github.com/your-github-user/DomeForms  
 
 ## Abstract
 DomeForms is a high-performance, modular form infrastructure designed as a self-hosted alternative to proprietary solutions like WordPress plugins or third-party SaaS providers. It combines a Type-Safe Monorepo architecture with real-time conditional logic and integrated payment processing via Stripe. This document outlines the technical architecture, security principles, and extensibility features that define the platform.

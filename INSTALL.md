@@ -3,7 +3,7 @@
 ## Your Hosting Details
 - **Domain**: frugin.com
 - **Package**: Blaze (Autoscaling Linux)
-- **Home Path**: `/home/sites/35b/1/19bacc8a25/`
+- **Home Path**: `/var/www/`
 - **Email**: smtp.stackmail.com / imap.stackmail.com
 
 ---
@@ -15,7 +15,7 @@
 On your computer, navigate to the project and run:
 
 ```bash
-cd /home/paul/Documents/formCurator
+cd /path/to/domeforms
 corepack pnpm install
 mkdir -p data
 
@@ -23,7 +23,7 @@ mkdir -p data
 cat > packages/server/.env << 'EOF'
 NODE_ENV=production
 PORT=3000
-DATABASE_URL="file:/home/sites/35b/1/19bacc8a25/public_html/forms/data/domeforms.db"
+DATABASE_URL="file:/var/www/domeforms/data/domeforms.db"
 DATABASE_TYPE=sqlite
 BETTER_AUTH_SECRET="YOUR_RANDOM_32_CHAR_SECRET_HERE_CHANGE_THIS_NOW"
 BETTER_AUTH_URL="https://frugin.com"
@@ -39,7 +39,7 @@ corepack pnpm build
 
 ### Step 2: Upload to Your Server
 
-Upload these folders to `/home/sites/35b/1/19bacc8a25/public_html/forms/`:
+Upload these folders to `/var/www/domeforms/`:
 - `dist/` (from packages/server/dist)
 - `data/` (empty folder)
 - `.env` (the file you just created)
@@ -62,7 +62,7 @@ Upload these folders to `/home/sites/35b/1/19bacc8a25/public_html/forms/`:
 
 **If you have SSH:**
 ```bash
-cd /home/sites/35b/1/19bacc8a25/public_html/forms
+cd /var/www/domeforms
 chmod 755 data
 touch data/domeforms.db
 chmod 666 data/domeforms.db
@@ -87,13 +87,13 @@ You should see:
 | Problem | Fix |
 |---------|-----|
 | White screen | Check cPanel logs → click "Logs" button next to your app |
-| Database errors | Run: `chmod 666 /home/sites/35b/1/19bacc8a25/public_html/forms/data/domeforms.db` |
+| Database errors | Run: `chmod 666 /var/www/domeforms/data/domeforms.db` |
 | Can't login | First registration creates admin account automatically |
 | Slow loading | Add caching .htaccess (see below) |
 
 ### Performance (.htaccess)
 
-Create `/home/sites/35b/1/19bacc8a25/public_html/forms/.htaccess`:
+Create `/var/www/domeforms/.htaccess`:
 ```apache
 <IfModule mod_expires.c>
   ExpiresActive On

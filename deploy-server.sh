@@ -5,10 +5,10 @@
 set -e
 
 VPS_USER="root"
-VPS_HOST="72.62.161.34"
+VPS_HOST="your-vps-ip"
 REMOTE_DIR="/var/www/domeforms-api"
-LOCAL_SERVER_DIR="/home/paul/Documents/formCurator/packages/server/dist"
-PACKAGE_JSON="/home/paul/Documents/formCurator/packages/server/package.json"
+LOCAL_SERVER_DIR="/path/to/domeforms/packages/server/dist"
+PACKAGE_JSON="/path/to/domeforms/packages/server/package.json"
 
 echo "========================================="
 echo "   DomeForms Server Deployment"
@@ -67,11 +67,11 @@ PORT=3000
 DATABASE_URL="file:${REMOTE_DIR}/data/domeforms.db"
 DATABASE_TYPE=sqlite
 BETTER_AUTH_SECRET="domeforms-production-secret-key-32chars-now"
-BETTER_AUTH_URL="https://domeforms.frugalin.cloud"
-FRONTEND_URL="https://domeforms.frugalin.cloud"
+BETTER_AUTH_URL="https://domeforms.yourdomain.com"
+FRONTEND_URL="https://domeforms.yourdomain.com"
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
-SMTP_FROM="noreply@domeforms.frugalin.cloud"
+SMTP_FROM="noreply@domeforms.yourdomain.com"
 ENVEOF
 scp /tmp/.env ${VPS_USER}@${VPS_HOST}:${REMOTE_DIR}/
 
@@ -99,4 +99,4 @@ echo "========================================="
 echo ""
 echo "Test with:"
 echo "  curl http://127.0.0.1:3000/api/health"
-echo "  curl https://domeforms.frugalin.cloud/api/health"
+echo "  curl https://domeforms.yourdomain.com/api/health"

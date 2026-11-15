@@ -1,6 +1,6 @@
 #!/bin/bash
 # Simple deployment using direct rsync
-cd /home/paul/Documents/formCurator
+cd /path/to/domeforms
 
 # Create package.json for the server
 cat > packages/server/dist/package.json << 'PKGJSON'
